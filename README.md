@@ -4,6 +4,12 @@ Monitoring realtime untuk OpenWrt dengan tampilan modern + kontrol client WiFi.
 
 ---
 
+📸 Preview
+
+"Monitoring UI" (https://raw.githubusercontent.com/Trusty179/Monitoring-OpenWrt/main/Screenshot_2026-04-02-15-26-35-584_com.android.chrome.png)
+
+---
+
 ✨ Fitur
 
 - 📊 Speed Internet realtime (Download & Upload)
