@@ -6,7 +6,8 @@ Monitoring realtime untuk OpenWrt dengan tampilan modern + kontrol client WiFi.
 
 📸 Preview
 
-"Monitoring UI" (https://raw.githubusercontent.com/Trusty179/Monitoring-OpenWrt/main/Screenshot_2026-04-02-15-26-35-584_com.android.chrome.png)
+"Monitoring UI" ([https://raw.githubusercontent.com/Trusty179/Monitoring-OpenWrt/main/Screenshot_2026-04-02-15-26-35-584_com.android.chrome.png](https://raw.githubusercontent.com/Trusty179/Monitoring-OpenWrt/main/Screenshot_2026-04-06-18-28-58-502_com.trustywrt.web.jpg)
+https://raw.githubusercontent.com/Trusty179/Monitoring-OpenWrt/main/Screenshot_2026-04-06-18-29-02-672_com.trustywrt.web.jpg )
 
 ---
 
