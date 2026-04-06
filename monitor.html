@@ -1,426 +1,363 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
-/* ===== GLOBAL ===== */
 *{box-sizing:border-box;}
-
-html, body{
-    margin:0;
-    padding:0;
-    height:100%;
-    overflow:hidden;
-    background:#020b14;
-    color:#fff;
-    font-family:sans-serif;
+body{
+margin:0;
+background:#020b14;
+color:#fff;
+font-family:sans-serif;
+/* PERBAIKAN: Padding top ditambah (45px) agar tidak tertutup Navbar */
+padding: 45px 12px 20px 12px; 
+overflow-y: auto;
+overflow-x: hidden;
 }
 
-#maincontent, .main, .container, .cbi-map{
-    height:100% !important;
-    overflow:hidden !important;
-}
+.section-title{font-size:12px;opacity:.7;padding:12px 6px 4px 0px; font-weight: bold; text-transform: uppercase;}
 
-#monitor-root{
-    display:flex;
-    flex-direction:column;
-    height:100%;
-}
-
-/* TOP */
-.grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:6px;
-    padding:6px;
-}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 0;}
 
 .card{
-    background:linear-gradient(180deg,#061c2a,#04121a);
-    border-radius:12px;
-    padding:8px;
-    box-shadow:0 0 25px rgba(0,255,255,0.2);
+background:linear-gradient(180deg,#061c2a,#04121a);
+border-radius:12px;
+padding:10px;
+box-shadow:0 0 20px rgba(0,255,255,0.1);
+transition:0.3s;
+border: 1px solid rgba(0,255,255,0.05);
 }
 
-.title{font-size:11px;opacity:.7;margin-bottom:3px;}
-.value{font-size:14px;font-weight:bold;}
+/* Box System Info: Perpanjang Box & Jarak Tulisan */
+.card-sys { border-top: 4px solid #0056b3; padding: 18px 15px; } 
+.card-mem { border-top: 4px solid #8e44ad; }
+.card-storage { border-top: 4px solid #27ae60; }
+.card-client-container { border-top: 4px solid #e74c3c; padding: 10px; background:linear-gradient(180deg,#061c2a,#04121a); border-radius:12px; }
 
-/* 🔥 CHART FULL WIDTH */
+.sys-info-grid {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 14px; 
+    font-size: 10px;
+    line-height: 1.8; 
+}
+/* Warna label dibuat putih terang agar kelihatan */
+.sys-label { color: #ffffff; opacity: 0.9; font-weight: normal; }
+.sys-value { font-weight: bold; color: #00e5ff; word-break: break-all; }
+
+.bar{
+height:6px;
+background:rgba(255,255,255,0.1);
+border-radius:6px;
+margin-top:6px;
+overflow:hidden;
+}
+.bar-fill{
+height:100%;
+width:0%;
+background:#00e676;
+box-shadow:0 0 10px #00e676;
+transition:0.3s;
+}
+
+.speed-green{box-shadow:0 0 20px #00e676;}
+.speed-yellow{box-shadow:0 0 20px #ffd600;}
+
+.cpu-glow-green{box-shadow:0 0 20px #00e676;}
+.cpu-glow-yellow{box-shadow:0 0 20px #ffd600;}
+.cpu-glow-red{box-shadow:0 0 20px #ff5252; animation:blink 0.8s infinite;}
+
+.iface-grid{display:grid; grid-template-columns:1fr; gap:6px; padding:6px 0;}
+.interface-card{
+background:linear-gradient(180deg,#061c2a,#04121a);
+border-radius:10px;
+padding:10px;
+text-align:center;
+font-size:11px;
+line-height:1.2;
+border: 1px solid rgba(255,255,255,0.05);
+}
+.iface-up{border-color:#00e676;}
+.iface-down{border-color:#ff5252;}
+
+.title{font-size:11px;opacity:.7;}
+.value{font-size:15px;font-weight:bold;}
+
+/* Warna Teks Dinamis CPU & Suhu */
+.cpu-green{color:#00e676 !important;}
+.cpu-yellow{color:#ffd600 !important;}
+.cpu-red{color:#ff5252 !important; animation:blink 0.8s infinite;}
+
+.temp-green{color:#00e676 !important;}
+.temp-yellow{color:#ffd600 !important;}
+.temp-red{color:#ff5252 !important; animation:blink 0.8s infinite;}
+
+@keyframes blink{ 0%{opacity:1;} 50%{opacity:0.4;} 100%{opacity:1;} }
+
 .chart-card{
-    height:130px;
-    margin:0;
-    padding:0;
+height:150px;
+padding:6px;
+margin:8px 0;
+border-radius:12px;
+background:#04121a;
+border:1px solid rgba(0,255,255,0.1);
 }
 
-.chart-card canvas{
-    width:100% !important;
-    height:100% !important;
-    display:block;
-}
-
-/* CLIENT */
-.client-section{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    padding:6px;
-    min-height:0;
-}
-
-/* 🔥 SCROLL CLIENT */
-#clients{
-    flex:1;
-    overflow-y:auto;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    padding-right:2px;
-}
-
-/* SCROLL STYLE */
-#clients::-webkit-scrollbar{
-    width:4px;
-}
-#clients::-webkit-scrollbar-thumb{
-    background:#00e5ff;
-    border-radius:10px;
-}
+canvas{width:100%!important;height:100%!important}
 
 .client{
-    padding:6px;
-    border-radius:10px;
-    background:rgba(255,255,255,0.06);
-    box-shadow:0 0 12px rgba(0,255,255,0.1);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+display:flex; justify-content:space-between; align-items: center;
+padding:10px 8px; margin:4px 0; border-radius:8px;
+border-bottom:1px solid rgba(0,255,255,0.15);
+background:rgba(255,255,255,0.02);
 }
 
-.client-left{font-size:11px;}
+.btn{padding:5px 8px; border:none; border-radius:6px; font-size:10px; color:#fff; cursor:pointer; font-weight: bold;}
+.disconnect{background:#ff1744;} .block{background:#ff5252;} .unblock{background:#00e676;}
 
-.client-right{
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
+.bar-text {
+    font-size: 9px; text-align: right; margin-bottom: -11px; position: relative; z-index: 1; padding-right: 4px;
 }
-
-.status-active{
-    color:#00e676;
-    font-size:10px;
-    text-shadow:0 0 6px #00e676;
-}
-
-.status-block{
-    color:#ff5252;
-    font-size:10px;
-    text-shadow:0 0 6px #ff5252;
-}
-
-.btn{
-    margin-top:2px;
-    padding:4px 8px;
-    border:none;
-    border-radius:6px;
-    font-size:10px;
-    cursor:pointer;
-    color:#fff;
-}
-
-.block{
-    background:#ff5252;
-    box-shadow:0 0 10px #ff5252;
-}
-
-.unblock{
-    background:#00e676;
-    box-shadow:0 0 10px #00e676;
-}
-
-/* 🔥 DISCONNECT BUTTON */
-.disconnect{
-    background:#ff1744;
-    box-shadow:0 0 10px #ff1744;
-}
-
-/* 🔥 TEMP COLOR */
-.temp-green{color:#00e676;text-shadow:0 0 6px #00e676;}
-.temp-yellow{color:#ffd600;text-shadow:0 0 6px #ffd600;}
-.temp-red{
-    color:#ff5252;
-    text-shadow:0 0 10px #ff0000;
-    animation:blink 0.8s infinite;
-}
-
-/* 🔥 CPU COLOR */
-.cpu-green{color:#00e676;text-shadow:0 0 6px #00e676;}
-.cpu-yellow{color:#ffd600;text-shadow:0 0 6px #ffd600;}
-.cpu-red{
-    color:#ff5252;
-    text-shadow:0 0 10px #ff0000;
-    animation:blink 0.8s infinite;
-}
-
-/* 🔥 SPEED COLOR */
-.speed-green{color:#00e676;text-shadow:0 0 6px #00e676;}
-.speed-yellow{color:#ffd600;text-shadow:0 0 6px #ffd600;}
-.speed-white{color:#ffffff;}
-
-@keyframes blink{
-    0%{opacity:1;}
-    50%{opacity:0.4;}
-    100%{opacity:1;}
-}
-
 </style>
 </head>
 
 <body>
 
-<div id="monitor-root">
+<div class="section-title">ℹ️ System Information</div>
+<div class="card card-sys">
+    <div class="sys-info-grid">
+        <div class="sys-label">Model:</div><div id="sysModel" class="sys-value">-</div>
+        <div class="sys-label">Firmware:</div><div id="sysFirmware" class="sys-value">-</div>
+        <div class="sys-label">Kernel:</div><div id="sysKernel" class="sys-value">-</div>
+        <div class="sys-label">Local Time:</div><div id="sysTime" class="sys-value" style="color: #ffd600;">-</div>
+        <div class="sys-label">Uptime:</div><div id="sysUptime" class="sys-value" style="color: #00e676;">-</div>
+    </div>
+</div>
+
+<div class="section-title">🌐 Interface Status</div>
+<div class="iface-grid" id="interfaces"></div>
 
 <div class="grid">
-<div class="card">
-    <div class="title">⚡ Speed Internet</div>
-    <div id="speed" class="value">Loading...</div>
+    <div class="card" id="speedCard">
+        <div class="title">⚡ Speed Internet</div>
+        <div id="speed" class="value">...</div>
+    </div>
+    <div class="card" id="cpuCard">
+        <div class="title">🖥 CPU</div>
+        <div id="cpu" class="value">-</div>
+        <div id="temp" style="font-size: 11px;"></div>
+    </div>
 </div>
 
-<div class="card">
-    <div class="title">🖥 CPU</div>
-    <div id="cpu" class="value">-</div>
-    <div id="temp"></div>
-</div>
+<div class="chart-card"><canvas id="speedChart"></canvas></div>
+<div class="chart-card"><canvas id="cpuChart"></canvas></div>
+
+<div class="section-title">🧠 Memory Usage</div>
+<div class="card card-mem" style="margin-bottom: 6px;">
+    <div style="font-size: 10px;">Used</div>
+    <div id="usedText" class="bar-text">-</div>
+    <div class="bar"><div id="usedBar" class="bar-fill"></div></div>
+    <div style="font-size: 10px; margin-top: 8px;">Cached</div>
+    <div id="cachedText" class="bar-text">-</div>
+    <div class="bar"><div id="cachedBar" class="bar-fill" style="background:#2980b9;"></div></div>
+    <div style="font-size: 10px; margin-top: 8px;">Swap free</div>
+    <div id="swapText" class="bar-text">-</div>
+    <div class="bar"><div id="swapBar" class="bar-fill" style="background:#f39c12;"></div></div>
 </div>
 
-<div class="chart-card">
-    <canvas id="speedChart"></canvas>
+<div class="section-title">💾 Storage Info</div>
+<div class="card card-storage" style="margin-bottom: 6px;">
+    <div style="font-size: 10px;">Disk space (Root)</div>
+    <div id="rootText" class="bar-text">-</div>
+    <div class="bar"><div id="rootBar" class="bar-fill"></div></div>
+    <div style="font-size: 10px; margin-top: 8px;">Temp space (/tmp)</div>
+    <div id="tmpText" class="bar-text">-</div>
+    <div class="bar"><div id="tmpBar" class="bar-fill" style="background:#2196f3; box-shadow:0 0 10px #2196f3;"></div></div>
+    <div style="font-size: 10px; margin-top: 8px;">tmpfs (/run)</div>
+    <div id="runText" class="bar-text">-</div>
+    <div class="bar"><div id="runBar" class="bar-fill" style="background:#ff9800; box-shadow:0 0 10px #ff9800;"></div></div>
 </div>
 
-<div class="chart-card">
-    <canvas id="cpuChart"></canvas>
-</div>
+<div class="section-title">📶 Client Control</div>
+<div class="card-client-container" id="clients"></div>
 
-<div class="client-section">
-    <div class="title">📶 Client Control</div>
-    <div id="clients"></div>
-</div>
-
+<div class="section-title">📡 Network Upstream</div>
+<div class="card" style="border-top: 4px solid #0056b3;">
+    <div class="sys-info-grid">
+        <div class="sys-label">Protocol:</div><div class="sys-value">DHCP client</div>
+        <div class="sys-label">Address:</div><div id="wanIP" class="sys-value">-</div>
+        <div class="sys-label">Gateway:</div><div id="wanGW" class="sys-value">-</div>
+        <div class="sys-label">DNS:</div><div id="wanDNS" class="sys-value">-</div>
+        <div class="sys-label">Device:</div><div id="wanDev" class="sys-value" style="color:#00e676">-</div>
+    </div>
+    <div style="font-size: 10px; margin-top: 10px; opacity: 0.7; font-weight: bold;">Active Connections</div>
+    <div id="connText" style="font-size: 9px; text-align: center; margin-bottom: -11px; position: relative; z-index: 1;">-</div>
+    <div class="bar"><div id="connBar" class="bar-fill" style="background:#00e5ff; box-shadow:0 0 10px #00e5ff;"></div></div>
 </div>
 
 <script>
+function setStatic(mac, ip){
+    fetch(`/cgi-bin/yacd.sh?action=static&mac=${mac}&ip=${ip}`)
+    .then(res => res.ok ? alert(`Berhasil! ${ip} diset ke Static.`) : alert('Gagal'));
+}
 
-// SHADOW
+function toggleBlock(ip, currentStatus){
+    let action = (currentStatus === 'blocked') ? 'unblock' : 'block';
+    fetch(`/cgi-bin/yacd.sh?action=${action}&ip=${ip}`);
+}
+
+function formatBytesSmart(kb){
+    if(!kb || isNaN(kb)) return '0 MiB';
+    let mb = kb / 1024;
+    return mb >= 1024 ? (mb/1024).toFixed(1) + ' GB' : mb.toFixed(1) + ' MB';
+}
+function formatBytes(bytes){
+    if(bytes < 1024) return bytes + ' B';
+    let kb = bytes/1024; if(kb < 1024) return kb.toFixed(1)+' KB';
+    return (kb/1024).toFixed(1)+' MB';
+}
+function formatSpeed(v){ return v < 1 ? (v*1024).toFixed(0)+' Kbps' : v.toFixed(2)+' Mbps'; }
+function getColor(v){ return v>=1 ? "#00e676" : (v>=0.1 ? "#ffd600" : "#fff"); }
+
 const shadowPlugin = {
-    id:'shadowColor',
-    beforeDatasetDraw(chart, args){
-        const ctx = chart.ctx;
+    id: 'shadow',
+    beforeDatasetDraw(chart, args) {
+        const { ctx } = chart;
         ctx.save();
-        ctx.shadowColor = args.meta.dataset.options.borderColor;
-        ctx.shadowBlur = 25;
+        const borderColor = args.meta.dataset.options.borderColor;
+        ctx.shadowColor = borderColor;
+        ctx.shadowBlur = 18;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
     },
-    afterDatasetDraw(chart){
+    afterDatasetDraw(chart) {
         chart.ctx.restore();
     }
 };
 Chart.register(shadowPlugin);
 
-// DATA
-let rx_old=null, tx_old=null;
-
-// FORMAT
-function formatSpeed(v){
-    if(v < 1) return (v*1024).toFixed(0)+' Kbps';
-    return v.toFixed(2)+' Mbps';
-}
-
-// GRADIENT
-function gradient(ctx,color){
-    let g = ctx.createLinearGradient(0,0,0,150);
-    g.addColorStop(0,color);
-    g.addColorStop(0.5,color.replace('0.9','0.3'));
-    g.addColorStop(1,"rgba(0,0,0,0)");
+function getGradient(ctx, color) {
+    let g = ctx.createLinearGradient(0, 0, 0, 150);
+    g.addColorStop(0, color);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
     return g;
 }
 
-// SPEED CHART
-let ctx1=document.getElementById('speedChart').getContext('2d');
-let speedChart=new Chart(ctx1,{
-type:'line',
-data:{
-    labels:Array(20).fill(""),
-    datasets:[
-    {
-        data:Array(20).fill(0),
-        borderColor:'#00e5ff',
-        backgroundColor:gradient(ctx1,'rgba(0,229,255,0.9)'),
-        fill:true,
-        tension:.45,
-        pointRadius:0
+const commonOptions = {
+    animation: false,
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+        x: { display: false },
+        y: { display: true, beginAtZero: true, grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { display: false } }
+    }
+};
+
+let ctx1 = document.getElementById('speedChart').getContext('2d');
+let speedChart = new Chart(ctx1, {
+    type: 'line',
+    data: {
+        labels: Array(25).fill(""),
+        datasets: [
+            { data: Array(25).fill(0), borderColor: '#00e5ff', backgroundColor: getGradient(ctx1, 'rgba(0,229,255,0.3)'), fill: true, tension: 0.4, pointRadius: 0, borderWidth: 3 },
+            { data: Array(25).fill(0), borderColor: '#ff9800', backgroundColor: getGradient(ctx1, 'rgba(255,152,0,0.1)'), fill: true, tension: 0.4, pointRadius: 0, borderWidth: 3 }
+        ]
     },
-    {
-        data:Array(20).fill(0),
-        borderColor:'#ff9800',
-        backgroundColor:gradient(ctx1,'rgba(255,152,0,0.9)'),
-        fill:true,
-        tension:.45,
-        pointRadius:0
-    }]
-},
-options:{animation:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}
+    options: commonOptions
 });
 
-// CPU CHART
-let ctx2=document.getElementById('cpuChart').getContext('2d');
-let cpuChart=new Chart(ctx2,{
-type:'line',
-data:{
-    labels:Array(20).fill(""),
-    datasets:[
-    {
-        data:Array(20).fill(0),
-        borderColor:'#00e676',
-        backgroundColor:gradient(ctx2,'rgba(0,230,118,0.9)'),
-        fill:true,
-        tension:.45,
-        pointRadius:0
+let ctx2 = document.getElementById('cpuChart').getContext('2d');
+let cpuChart = new Chart(ctx2, {
+    type: 'line',
+    data: {
+        labels: Array(25).fill(""),
+        datasets: [
+            { data: Array(25).fill(0), borderColor: '#00e676', backgroundColor: getGradient(ctx2, 'rgba(0,230,118,0.2)'), fill: true, tension: 0.4, pointRadius: 0, borderWidth: 3 },
+            { data: Array(25).fill(0), borderColor: '#ffd600', backgroundColor: getGradient(ctx2, 'rgba(255,214,0,0.1)'), fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2 }
+        ]
     },
-    {
-        data:Array(20).fill(0),
-        borderColor:'#ffd600',
-        backgroundColor:gradient(ctx2,'rgba(255,214,0,0.9)'),
-        fill:true,
-        tension:.45,
-        pointRadius:0
-    }]
-},
-options:{animation:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}
+    options: commonOptions
 });
 
-// FETCH
-async function getData(){
-    try{
-        let res=await fetch('/cgi-bin/yacd.sh?t='+Date.now());
-        let text=await res.text();
-        if(!text || text[0]!="{") return null;
-        return JSON.parse(text);
-    }catch{return null;}
-}
+let rx_old=null,tx_old=null;
+let lastClientData = "";
 
-// LOOP
-setInterval(async()=>{
+async function update(){
+    try {
+        let r=await fetch('/cgi-bin/yacd.sh?t='+Date.now());
+        let d=await r.json();
 
-    let d=await getData();
-    if(!d) return;
+        if(d.sys){
+            document.getElementById('sysModel').innerText = d.sys.model || '-';
+            document.getElementById('sysFirmware').innerText = d.sys.firmware || '-';
+            document.getElementById('sysKernel').innerText = d.sys.kernel || '-';
+            document.getElementById('sysTime').innerText = d.sys.time || '-';
+            document.getElementById('sysUptime').innerText = d.sys.uptime || '-';
+        }
 
-    if(rx_old===null){
-        rx_old=d.rx;
-        tx_old=d.tx;
-        return;
-    }
+        if(d.wan){
+            document.getElementById('wanIP').innerText = d.wan.ip || '-';
+            document.getElementById('wanGW').innerText = d.wan.gw || '-';
+            document.getElementById('wanDNS').innerText = d.wan.dns || '-';
+            document.getElementById('wanDev').innerText = d.wan.iface + " (" + d.wan.mac.toUpperCase() + ")";
+        }
 
-    let down=(d.rx-rx_old)*8/1024/1024;
-    let up=(d.tx-tx_old)*8/1024/1024;
+        if(d.conn){
+            document.getElementById('connBar').style.width = d.conn.per + '%';
+            document.getElementById('connText').innerText = d.conn.cur + ' / ' + d.conn.max + ' (' + d.conn.per + '%)';
+        }
 
-    rx_old=d.rx;
-    tx_old=d.tx;
-
-    let speedEl = document.getElementById('speed');
-    speedEl.classList.remove('speed-green','speed-yellow','speed-white');
-
-    let maxSpeed = Math.max(down, up);
-
-    if(maxSpeed >= 1){
-        speedEl.classList.add('speed-green');
-    }
-    else if(maxSpeed >= 0.1){
-        speedEl.classList.add('speed-yellow');
-    }
-    else{
-        speedEl.classList.add('speed-white');
-    }
-
-    speedEl.innerHTML =
-    '↓ '+formatSpeed(down)+' ↑ '+formatSpeed(up);
-
-    speedChart.data.datasets[0].data.shift();
-    speedChart.data.datasets[1].data.shift();
-
-    speedChart.data.datasets[0].data.push(down);
-    speedChart.data.datasets[1].data.push(up);
-
-    speedChart.update();
-
-    let cpuEl = document.getElementById('cpu');
-    cpuEl.innerText = d.cpu + ' %';
-    cpuEl.classList.remove('cpu-green','cpu-yellow','cpu-red');
-
-    if(d.cpu < 10){
-        cpuEl.classList.add('cpu-green');
-    }
-    else if(d.cpu < 20){
-        cpuEl.classList.add('cpu-yellow');
-    }
-    else{
-        cpuEl.classList.add('cpu-red');
-    }
-
-    let tempEl = document.getElementById('temp');
-    tempEl.innerText = d.temp + ' °C';
-    tempEl.classList.remove('temp-green','temp-yellow','temp-red');
-
-    if(d.temp < 55){
-        tempEl.classList.add('temp-green');
-    }
-    else if(d.temp < 65){
-        tempEl.classList.add('temp-yellow');
-    }
-    else{
-        tempEl.classList.add('temp-red');
-    }
-
-    cpuChart.data.datasets[0].data.shift();
-    cpuChart.data.datasets[1].data.shift();
-
-    cpuChart.data.datasets[0].data.push(d.cpu);
-    cpuChart.data.datasets[1].data.push(d.temp);
-
-    cpuChart.update();
-
-    let box=document.getElementById('clients');
-    box.innerHTML='';
-
-    if(d.clients){
-        d.clients.forEach(c=>{
-            box.innerHTML += `
-            <div class="client">
-                <div class="client-left">${c.name}<br>${c.ip}</div>
-                <div class="client-right">
-                    <div class="${c.status==="blocked"?"status-block":"status-active"}">
-                        ${c.status==="blocked"?"Blocked":"Active"}
-                    </div>
-
-                    <div style="display:flex; gap:4px; margin-top:2px;">
-                        <button class="btn disconnect"
-                        onclick="fetch('/cgi-bin/yacd.sh?action=disconnect&ip=${c.ip}')">
-                        Kick
-                        </button>
-
-                        <button class="btn ${c.status==="blocked"?"unblock":"block"}"
-                        onclick="fetch('/cgi-bin/yacd.sh?action=${c.status==="blocked"?"unblock":"block"}&ip=${c.ip}')">
-                        ${c.status==="blocked"?"Unblock":"Block"}
-                        </button>
-                    </div>
-
-                </div>
-            </div>`;
+        let boxI=document.getElementById('interfaces'); boxI.innerHTML='';
+        (d.interfaces||[]).forEach(i=>{
+            let up=(i.rx>0||i.tx>0);
+            boxI.innerHTML+=`<div class="interface-card ${up?'iface-up':'iface-down'}"><b>${i.name.toUpperCase()}</b><br>${up?'Connected':'No link'}<br>down ${formatBytes(i.rx)}<br>up ${formatBytes(i.tx)}</div>`;
         });
-    }
 
-},1000);
+        if(rx_old!==null){
+            let down=(d.rx-rx_old)*8/1024/1024; let up=(d.tx-tx_old)*8/1024/1024;
+            document.getElementById('speed').innerHTML= `<span style="color:${getColor(down)}">↓ ${formatSpeed(down)}</span> <span style="color:${getColor(up)}">↑ ${formatSpeed(up)}</span>`;
+            let sc=document.getElementById('speedCard'); sc.classList.remove('speed-green','speed-yellow');
+            if(Math.max(down,up)>=1) sc.classList.add('speed-green'); else if(Math.max(down,up)>=0.1) sc.classList.add('speed-yellow');
+            speedChart.data.datasets[0].data.shift(); speedChart.data.datasets[0].data.push(down);
+            speedChart.update();
+        }
+        rx_old=d.rx; tx_old=d.tx;
 
+        let cpuVal=d.cpu||0; let tempVal=d.temp||0;
+        let cpuEl=document.getElementById('cpu'); let cpuCard=document.getElementById('cpuCard');
+        cpuCard.classList.remove('cpu-glow-green','cpu-glow-yellow','cpu-glow-red');
+        
+        if(cpuVal<10){ cpuEl.className='value cpu-green'; cpuCard.classList.add('cpu-glow-green'); }
+        else if(cpuVal<20){ cpuEl.className='value cpu-yellow'; cpuCard.classList.add('cpu-glow-yellow'); }
+        else { cpuEl.className='value cpu-red'; cpuCard.classList.add('cpu-glow-red'); }
+        cpuEl.innerText=cpuVal+' %';
+
+        let tempEl=document.getElementById('temp');
+        if(tempVal<55) tempEl.className='temp-green'; else if(tempVal<60) tempEl.className='temp-yellow'; else tempEl.className='temp-red';
+        tempEl.innerText=tempVal+' °C';
+
+        cpuChart.data.datasets[0].data.shift(); cpuChart.data.datasets[0].data.push(cpuVal);
+        cpuChart.data.datasets[1].data.shift(); cpuChart.data.datasets[1].data.push(tempVal);
+        cpuChart.update();
+
+        let currentClientData = JSON.stringify(d.clients);
+        if(lastClientData !== currentClientData) {
+            let box=document.getElementById('clients'); box.innerHTML='';
+            (d.clients||[]).forEach(c=>{
+                let isS = (c.is_static === 1 || c.status === 'static');
+                let isB = (c.is_blocked === 1 || c.status === 'blocked');
+                box.innerHTML+=`<div class="client"><div class="client-left"><b>${c.name}</b><br>${c.ip}</div><div style="display: flex; gap: 4px;"><button class="btn disconnect" onclick="fetch('/cgi-bin/yacd.sh?action=disconnect&ip=${c.ip}')">Kick</button>${isS ? `<button class="btn" style="background:#00e676; cursor:default;">Static</button>` : `<button class="btn" style="background:#2196f3;" onclick="setStatic(\''+c.mac+'\',\''+c.ip+'\')">Static</button>`}<button class="btn ${isB ? 'unblock' : 'block'}" onclick="toggleBlock('${c.ip}', '${isB ? 'blocked' : 'active'}')">${isB ? 'Unblock' : 'Block'}</button></div></div>`;
+            });
+            lastClientData = currentClientData;
+        }
+    } catch(e) { console.error(e); }
+}
+setInterval(update, 1000);
+update();
 </script>
 
 </body>
