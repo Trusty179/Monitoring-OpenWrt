@@ -30,11 +30,8 @@ wget -O install.sh https://raw.githubusercontent.com/Trusty179/Monitoring-OpenWr
 
 ---
 
-🌐 Akses
-
-Setelah install & reboot:
-
-http://192.168.1.1/luci-static/custom/monitor.html
+🌐 Hasil
+informasi di overview semuanya akan di gantikan oleh monitor ini✅
 
 ---
 
